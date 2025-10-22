@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Electrónica de Calidad</title>
+    <style>
+        /* Estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        /* Header y Navegación */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #ffd700;
+        }
+
+        /* Carrito visible */
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Carrito lateral */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 300px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            padding: 20px;
+            transition: right 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .cart-total {
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .checkout-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .checkout-button:hover {
+            background: #764ba2;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            margin-top: 80px;
+            overflow: hidden;
+        }
+
+        .hero-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.6);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .cta-button:hover {
+            background: #ff5252;
+        }
+
+        /* Secciones */
+        section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #333;
+            font-size: 2.5rem;
+        }
+
+        /* Productos */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            text-align: center;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .buy-button {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .buy-button:hover {
+            background: #764ba2;
+        }
+
+        /* Ofertas */
+        #ofertas {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        #ofertas .section-title {
+            color: white;
+        }
+
+        .offer-badge {
+            background: #ffd700;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        /* Servicios */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        /* Contacto */
+        #contacto form {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #contacto form input,
+        #contacto form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #contacto form button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #contacto form button:hover {
+            background: #764ba2;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header y Navegación -->
+    <header>
+        <div class="nav-container">
+            <div class="logo">TechStore</div>
+            <nav>
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#productos">Productos</a></li>
+                    <li><a href="#ofertas">Ofertas</a></li>
+                    <li><a href="#servicios">Servicios</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="cart-icon" id="cartIcon">🛒<span class="cart-count" id="cartCount">0</span></div>
+        </div>
+    </header>
+
+    <!-- Carrito lateral -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div>
+            <div class="cart-header">Tu Carrito</div>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-total">Total: $<span id="cartTotal">0.00</span></div>
+        </div>
+        <button class="checkout-button" id="checkoutBtn">Pagar</button>
+    </div>
+
+    <!-- Sección Inicio/Hero -->
+    <section id="inicio" class="hero">
+        <img src="https://images.pexels.com/photos/9555099/pexels-photo-9555099.jpeg"
+            alt="Tecnología moderna: teléfonos y portátil" class="hero-img">
+        <div class="hero-content">
+            <h1>Bienvenido a TechStore</h1>
+            <p>Los mejores productos de electrónica al mejor precio</p>
+            <button class="cta-button" id="goOffers">Ver Ofertas</button>
+        </div>
+    </section>
+
+    <!-- Productos -->
+    <section id="productos">
+        <h2 class="section-title">Nuestros Productos</h2>
+        <div class="products-grid">
+            <div class="product-card">
+                <img src="https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg" alt="Smartphone Galaxy Pro"
+                    class="product-image">
+                <h3>Smartphone Galaxy Pro</h3>
+                <p>Último modelo con 128GB almacenamiento</p>
+                <div class="product-price" data-price="599.99">$599.99</div>
+                <button class="buy-button">Agregar al Carrito</button>
+            </div>
+            <div class="product-card">
+                <img src="https://images.pexels.com/photos/18105/pexels-photo.jpg" alt="Laptop Gaming"
+                    class="product-image">
+                <h3>Laptop Gaming</h3>
+                <p>RTX 4060, 16GB RAM, SSD 1TB</p>
+                <div class="product-price" data-price="1299.99">$1,299.99</div>
+                <button class="buy-button">Agregar al Carrito</button>
+            </div>
+            <div class="product-card">
+                <img src="https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg" alt="Audífonos Bluetooth"
+                    class="product-image">
+                <h3>Audífonos Bluetooth</h3>
+                <p>Cancelación de ruido activa</p>
+                <div class="product-price" data-price="199.99">$199.99</div>
+                <button class="buy-button">Agregar al Carrito</button>
+            </div>
+            <div class="product-card">
+                <img src="https://images.pexels.com/photos/277394/pexels-photo-277394.jpeg" alt="Smart Watch"
+                    class="product-image">
+                <h3>Smart Watch</h3>
+                <p>Monitoreo de salud y deportes</p>
+                <div class="product-price" data-price="249.99">$249.99</div>
+                <button class="buy-button">Agregar al Carrito</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ofertas -->
+    <section id="ofertas">
+        <h2 class="section-title">Ofertas Especiales</h2>
+        <div class="products-grid">
+            <div class="product-card" style="position:relative;">
+                <div class="offer-badge">-20%</div>
+                <img src="https://images.pexels.com/photos/5082559/pexels-photo-5082559.jpeg" alt="Tablet Pro en oferta"
+                    class="product-image">
+                <h3>Tablet Pro</h3>
+                <p>Oferta limitada por tiempo</p>
+                <div class="product-price" data-price="319.99">$319.99</div>
+                <button class="buy-button">Agregar al Carrito</button>
+            </div>
+            <div class="product-card" style="position:relative;">
+                <div class="offer-badge">-15%</div>
+                <img src="https://images.pexels.com/photos/1298601/pexels-photo-1298601.jpeg"
+                    alt="Consola Gaming en oferta" class="product-image">
+                <h3>Consola Gaming</h3>
+                <p>Edición especial con 2 juegos</p>
+                <div class="product-price" data-price="424.99">$424.99</div>
+                <button class="buy-button">Agregar al Carrito</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="servicios">
+        <h2 class="section-title">Nuestros Servicios</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">🚚</div>
+                <h3>Envío Gratis</h3>
+                <p>En compras mayores a $100</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">🔧</div>
+                <h3>Soporte Técnico</h3>
+                <p>Asistencia 24/7 para todos tus productos</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">💳</div>
+                <h3>Financiamiento</h3>
+                <p>Hasta 12 meses sin intereses</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">↩️</div>
+                <h3>Devoluciones</h3>
+                <p>30 días para cambiar tu producto</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">🔒</div>
+                <h3>Garantía Extendida</h3>
+                <p>Protege tus dispositivos hasta por 2 años adicionales.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">⚡</div>
+                <h3>Instalación a Domicilio</h3>
+                <p>Servicio de instalación de equipos grandes como televisores y computadoras.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Contacto -->
+    <section id="contacto">
+        <h2 class="section-title">Contáctanos</h2>
+        <form>
+            <input type="text" placeholder="Nombre Completo" required>
+            <input type="email" placeholder="Correo Electrónico" required>
+            <input type="text" placeholder="Asunto" required>
+            <textarea rows="5" placeholder="Escribe tu mensaje..." required></textarea>
+            <button type="submit">Enviar Mensaje</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>TechStore &copy; 2024 - Todos los derechos reservados</p>
+        <p>Email: contacto@techstore.com | Tel: +1 234 567 890</p>
+    </footer>
+
+    <script>
+        // Variables
+        const cart = [];
+        const cartIcon = document.getElementById('cartIcon');
+        const cartSidebar = document.getElementById('cartSidebar');
+        const cartItemsContainer = document.getElementById('cartItems');
+        const cartCount = document.getElementById('cartCount');
+        const cartTotal = document.getElementById('cartTotal');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const goOffers = document.getElementById('goOffers');
+
+        // Mostrar carrito
+        cartIcon.addEventListener('click', () => {
+            cartSidebar.classList.toggle('active');
+        });
+
+        // Agregar productos al carrito
+        document.querySelectorAll('.buy-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const productCard = button.parentElement;
+                const name = productCard.querySelector('h3').innerText;
+                const price = parseFloat(productCard.querySelector('.product-price').dataset.price);
+
+                // Buscar si el producto ya está en el carrito
+                const existingItem = cart.find(item => item.name === name);
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    cart.push({ name, price, quantity: 1 });
+                }
+                updateCart();
+            });
+        });
+
+        // Actualizar carrito
+        function updateCart() {
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                const div = document.createElement('div');
+                div.classList.add('cart-item');
+                div.innerHTML = `
+          <span>${item.name} x${item.quantity}</span>
+          <span>$${(item.price * item.quantity).toFixed(2)}</span>
+        `;
+                cartItemsContainer.appendChild(div);
+            });
+            cartTotal.innerText = total.toFixed(2);
+            cartCount.innerText = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        // Generar Ticket
+        function generateTicket() {
+            const ticketWindow = window.open('', 'Ticket', 'width=400,height=600');
+
+            let content = `
+        <h2 style="text-align:center;">🧾 TechStore</h2>
+        <p>Fecha: ${new Date().toLocaleString()}</p>
+        <hr>
+        <ul style="list-style:none;padding:0;">
+    `;
+
+            let total = 0;
+            cart.forEach(item => {
+                content += <li>${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}</li>;
+                total += item.price * item.quantity;
+            });
+
+            content += `
+        </ul>
+        <hr>
+        <h3>Total: $${total.toFixed(2)}</h3>
+        <p>¡Gracias por su compra!</p>
+        <button onclick="window.print()" style="margin-top:20px;padding:10px 20px;cursor:pointer;">Imprimir Ticket</button>
+    `;
+
+            ticketWindow.document.write(content);
+            ticketWindow.document.close();
+        }
+
+
+        // Pagar
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('Tu carrito está vacío.');
+            } else {
+                generateTicket(); // ✅ Aquí generamos el ticket
+                cart.length = 0;
+                updateCart();
+                cartSidebar.classList.remove('active');
+            }
+        });
+
+        // Botón "Ver Ofertas"
+        goOffers.addEventListener('click', () => {
+            document.querySelector('#ofertas').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+
+</html>
